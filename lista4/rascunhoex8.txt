@@ -1,0 +1,175 @@
+#include <stdio.h>
+
+#define MAX 100
+
+// Estrutura de Data
+typedef struct {
+    int dia;
+    int mes;
+    int ano;
+} Data;
+
+// Estrutura de Aluno
+typedef struct {
+    char nome[MAX];
+    Data nascimento;
+    int ra;
+} Aluno;
+
+// Função para criar um aluno
+Aluno criarAluno(char nome[MAX], int dia, int mes, int ano, int ra) {
+    Aluno novoAluno;
+    
+    int i = 0;
+    while (nome[i] != '\0') {
+        novoAluno.nome[i] = nome[i];
+        i++;
+    }
+    novoAluno.nome[i] = '\0';
+    
+    novoAluno.nascimento.dia = dia;
+    novoAluno.nascimento.mes = mes;
+    novoAluno.nascimento.ano = ano;
+    novoAluno.ra = ra;
+    
+    return novoAluno;
+}
+
+// Função para imprimir um aluno
+void imprimirAluno(Aluno aluno) {
+    printf("Nome: %s\n", aluno.nome);
+    printf("Data de Nascimento: %02d/%02d/%04d\n", aluno.nascimento.dia, aluno.nascimento.mes, aluno.nascimento.ano);
+    printf("RA: %d\n", aluno.ra);
+}
+
+// Função para verificar se uma string é igual à outra (sem usar strcmp)
+int comparaStrings(char str1[], char str2[]) {
+    int i = 0;
+    while (str1[i] != '\0' && str2[i] != '\0') {
+        if (str1[i] != str2[i]) {
+            return 0; // Strings diferentes
+        }
+        i++;
+    }
+    // Verifica se ambas terminaram ao mesmo tempo
+    return (str1[i] == '\0' && str2[i] == '\0');
+}
+
+// Função para buscar alunos por nome
+void buscarAlunoPorNome(Aluno alunos[], int qtd, char nomeBusca[]) {
+    int encontrado = 0;
+    printf("\nResultados da busca por: %s\n", nomeBusca);
+    for (int i = 0; i < qtd; i++) {
+        if (comparaStrings(alunos[i].nome, nomeBusca)) {
+            imprimirAluno(alunos[i]);
+            printf("\n");
+            encontrado = 1;
+        }
+    }
+    if (!encontrado) {
+        printf("Nenhum aluno encontrado com o nome %s.\n", nomeBusca);
+    }
+}
+
+// Função para listar alunos dentro de um intervalo de datas de nascimento
+void listarAlunosPorIntervalo(Aluno alunos[], int qtd, Data inicio, Data fim) {
+    printf("\nAlunos nascidos entre %02d/%02d/%04d e %02d/%02d/%04d:\n",
+           inicio.dia, inicio.mes, inicio.ano, fim.dia, fim.mes, fim.ano);
+    
+    int encontrado = 0;
+    for (int i = 0; i < qtd; i++) {
+        Data nascimento = alunos[i].nascimento;
+        if ((nascimento.ano > inicio.ano || 
+            (nascimento.ano == inicio.ano && nascimento.mes > inicio.mes) ||
+            (nascimento.ano == inicio.ano && nascimento.mes == inicio.mes && nascimento.dia >= inicio.dia)) &&
+            (nascimento.ano < fim.ano || 
+            (nascimento.ano == fim.ano && nascimento.mes < fim.mes) ||
+            (nascimento.ano == fim.ano && nascimento.mes == fim.mes && nascimento.dia <= fim.dia))) {
+            imprimirAluno(alunos[i]);
+            printf("\n");
+            encontrado = 1;
+        }
+    }
+
+    if (!encontrado) {
+        printf("Nenhum aluno encontrado no intervalo especificado.\n");
+    }
+}
+
+// Função para cadastrar alunos
+int cadastrarAlunos(Aluno alunos[], int qtd) {
+    char nome[MAX];
+    int dia, mes, ano, ra;
+
+    printf("\nCadastro de Aluno %d\n", qtd + 1);
+    printf("Digite o nome: ");
+    getchar(); // Limpar o buffer do teclado
+    int i = 0;
+    char c;
+    while ((c = getchar()) != '\n' && c != EOF) {
+        nome[i++] = c;
+    }
+    nome[i] = '\0';
+
+    printf("Digite o dia de nascimento: ");
+    scanf("%d", &dia);
+    printf("Digite o mes de nascimento: ");
+    scanf("%d", &mes);
+    printf("Digite o ano de nascimento: ");
+    scanf("%d", &ano);
+    printf("Digite o RA: ");
+    scanf("%d", &ra);
+
+    alunos[qtd] = criarAluno(nome, dia, mes, ano, ra);
+    return qtd + 1;
+}
+
+int main(void) {
+    Aluno alunos[MAX];
+    int qtdAlunos = 0;
+    int opcao;
+    char nomeBusca[MAX];
+    Data inicio, fim;
+
+    do {
+        printf("\nMenu:\n");
+        printf("1. Cadastrar Aluno\n");
+        printf("2. Buscar Aluno por Nome\n");
+        printf("3. Listar Alunos por Intervalo de Nascimento\n");
+        printf("0. Sair\n");
+        printf("Escolha uma opcao: ");
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1:
+                qtdAlunos = cadastrarAlunos(alunos, qtdAlunos);
+                break;
+            case 2:
+                printf("Digite o nome completo para buscar: ");
+                getchar(); // Limpa o buffer
+                int i = 0;
+                char c;
+                while ((c = getchar()) != '\n' && c != EOF) {
+                    nomeBusca[i++] = c;
+                }
+                nomeBusca[i] = '\0';
+                buscarAlunoPorNome(alunos, qtdAlunos, nomeBusca);
+                break;
+            case 3:
+                printf("Digite a data de inicio (dd mm aaaa): ");
+                scanf("%d %d %d", &inicio.dia, &inicio.mes, &inicio.ano);
+                printf("Digite a data de fim (dd mm aaaa): ");
+                scanf("%d %d %d", &fim.dia, &fim.mes, &fim.ano);
+                listarAlunosPorIntervalo(alunos, qtdAlunos, inicio, fim);
+                break;
+            case 0:
+                printf("Encerrando programa...\n");
+                break;
+            default:
+                printf("Opcao invalida.\n");
+                break;
+        }
+    } while (opcao != 0);
+
+    return 0;
+}

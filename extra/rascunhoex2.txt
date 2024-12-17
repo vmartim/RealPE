@@ -1,0 +1,87 @@
+#include <stdio.h>
+
+#define MAX 100
+
+typedef struct{
+    int coeficientes[MAX];
+    int grau;
+} Polinomio;
+
+void le_vect(int vect[MAX], int n){
+    for(int i = 0; i <= n; i++){
+        scanf("%d", &vect[i]);
+    }
+}
+
+Polinomio cria_polinomio(int coefs[MAX], int grau){
+    Polinomio novoPolinomio;
+    
+    for(int i = 0; i <= grau; i++){
+        novoPolinomio.coeficientes[i] = coefs[i];
+    }
+    
+    novoPolinomio.grau = grau;
+    
+    return novoPolinomio;
+}
+
+/*
+Polinomio soma_polinomio(Polinomio A, Polinomio B){
+    Polinomio novoPolinomio;
+    
+    A.grau > B.grau ? char maior = 'A' : char maior = 'B'; 
+    
+    A.grau = B.grau ? maior = 'X' : maior = maior;  
+    
+    if(maior == 'X'){
+        for(int i = 0; i <= A.grau; i++){
+            novoPolinomio.coeficientes[i] = A.coeficientes[i] + B.coeficientes[i];
+            novoPolinomio.grau = i;
+        }
+        
+        return novoPolinomio;
+    }
+    else if(maior = 'A'){
+        for(int i = 0; i <= A.grau; i++){
+            novoPolinomio.coeficientes[i] = A.coeficientes[i] + B.coeficientes[i];
+            novoPolinomio.grau = i;
+        }
+        
+        return novoPolinomio;
+    }
+}
+*/
+
+void imprime_polinomio(Polinomio P){
+    for(int i = 0; i <= P.grau; i++){
+        if(i != P.grau){printf("%dx^%d + ", P.coeficientes[P.grau - i], P.grau - i);}
+        else{printf("%d", P.coeficientes[P.grau - i]);}
+    }
+}
+
+int main(void){
+    int coefsA[MAX], grauA;
+    int coefsB[MAX], grauB;
+    
+    printf("Digite o grau do Polinomio A: ");
+    scanf("%d", &grauA);
+    
+    printf("Digite os coeficientes do Polinomio A (menor grau para maior grau): ");
+    le_vect(coefsA, grauA);
+    
+    printf("Digite o grau do Polinomio B: ");
+    scanf("%d", &grauB);
+    
+    printf("Digite os coeficientes do Polinomio B (menor grau para maior grau): ");
+    le_vect(coefsB, grauB);
+    
+    Polinomio A = cria_polinomio(coefsA, grauA);
+    Polinomio B = cria_polinomio(coefsB, grauB);
+    
+    Polinomio SOMA = soma_polinomio(A, B);
+    
+    printf("A soma de A com B\n");
+    imprime_polinomio(SOMA);
+    
+    return 0;
+}
